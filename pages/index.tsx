@@ -16,13 +16,28 @@ const Output = styled.div`
   align-items: center;
   justify-content: space-evenly;
   height: 200px;
-  width: 500px;
+  width: 450px;
   border: 1px solid ${({ theme }) => theme.primary};
   padding: 10px;
 `;
 
-const Code = styled.pre`
+const Code = styled.pre<{ active: boolean }>`
   font-family: courier, monospace;
+  padding: 10px;
+  border: 1px solid ${({ active, theme }) => (active ? theme.primary : 'transparent')};
+  transition: all 0.2s ease-in-out;
+`;
+
+const Button = styled.button<{ active: boolean }>`
+  background-color: ${({ active, theme }) => (active ? theme.primary : 'transparent')};
+  color: ${({ theme }) => theme.color};
+  border: 1px solid ${({ theme }) => theme.primary};
+  padding: 5px;
+  transition: all 0.2s ease-in-out;
+
+  &:hover {
+    cursor: pointer;
+  }
 `;
 
 type BoxProps = {
@@ -71,6 +86,8 @@ const Home: NextPage = () => {
   const [bottomRight, setBottomRight] = useState('0');
   const [bottomLeft, setBottomLeft] = useState('0');
 
+  const [active, setActive] = useState(false);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.id === 'allSides') {
       setAllSides(e.target.value);
@@ -97,12 +114,26 @@ const Home: NextPage = () => {
   border-radius: ${topLeft}px ${topRight}px ${bottomRight}px ${bottomLeft}px;
 }`;
 
+  const handleClick = () => {
+    navigator.clipboard.writeText(out);
+    setActive(true);
+
+    setTimeout(() => setActive(false), 1000);
+  };
+
   return (
     <Container>
       <Output>
-        <Code>
+        <Code active={active}>
           {out}
         </Code>
+
+        <Button
+          active={active}
+          onClick={handleClick}
+        >
+          Copy to clipboard
+        </Button>
       </Output>
 
       <Box
